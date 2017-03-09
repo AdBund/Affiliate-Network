@@ -1,0 +1,5 @@
+
+.idea
+*.iml
+/affiliate/model/config.py
+/affiliate/model/task/config/database.yml

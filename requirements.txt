@@ -1,0 +1,9 @@
+nose
+sphinx
+requests
+mongoengine
+peewee
+PyMySQL
+setuptools
+schedule
+python-dateutil

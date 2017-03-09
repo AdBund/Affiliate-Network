@@ -1,0 +1,7 @@
+default:
+  adapter: mysql2
+  encoding: utf8
+  username: monty
+  password: monty
+  host: 127.0.0.1
+  database: affiliatenetwork

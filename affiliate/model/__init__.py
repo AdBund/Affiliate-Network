@@ -1,0 +1,1 @@
+from .mysql_model import db,AProvider,AApiToken,AAffiliates,AStatistics
