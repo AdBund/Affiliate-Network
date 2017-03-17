@@ -1,5 +1,5 @@
 from peewee import *
-from .config import mysql
+from affiliate.model.config import mysql
 
 db = MySQLDatabase(mysql['name'],
                    host=mysql['host'],
@@ -79,7 +79,7 @@ class AStatistics(BaseModel):
         db_table = "statistics"
 
     indexes = (
-    ('affiliate_identity', 'payout', 'conversion_flow', 'offer_type', 'provider_id', 'api_token_id', 'tracklink'), True)
+    ('affiliate_id', 'payout', 'conversion_flow', 'offer_type', 'provider_id', 'api_token_id', 'tracklink'), True)
 
 
 db.connect()

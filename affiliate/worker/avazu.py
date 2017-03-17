@@ -1,10 +1,12 @@
 import datetime
+import json
 import logging
+import traceback
 
 import peewee
 
-from ..model import AProvider, AApiToken, AAffiliates, AStatistics, db
-from ..rest import Avazu
+from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
+from affiliate.rest.avazu import Avazu
 
 
 def avazu():
@@ -82,7 +84,7 @@ def avazu():
                     'payout': payout,
                     'preview_url': preview_url,
                     'tracklink': tracklink,
-                    'date': datetime.datetime.now(),
+                    # 'date': datetime.datetime.now(),
                 }
 
                 print('-----------------------')
@@ -92,5 +94,6 @@ def avazu():
                     logging.warning(' statistics data already exists')
                     pass
                 except Exception as e:
+                    traceback.print_exc()
                     logging.warning(e)
                     pass

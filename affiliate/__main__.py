@@ -1,5 +1,5 @@
-from .worker import yeahmobi
-from .worker import avazu
+from affiliate.worker import yeahmobi
+from affiliate.worker import avazu
 
 def main():
     # yeahmobi()

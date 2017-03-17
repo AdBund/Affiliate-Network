@@ -2,8 +2,8 @@ import logging
 
 import peewee
 
-from ..model import AProvider, AApiToken, AAffiliates, AStatistics, db
-from ..rest import Yeahmobi
+from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
+from affiliate.rest.yeahmobi import Yeahmobi
 
 
 def yeahmobi():
