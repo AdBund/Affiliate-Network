@@ -1,3 +1,4 @@
+import threading
 import traceback
 import logging
 import time
@@ -14,7 +15,7 @@ def job():
     for ts in listTS:
         try:
             print('start -->' + str(ts))
-            ts()
+            threading.Thread(target=ts).start()
         except Exception as e:
             print(str(ts) + ' is error ,and error : ' + str(e) + " continue next TS !")
             logging.error(traceback.format_exc())
