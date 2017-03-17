@@ -61,7 +61,7 @@ class AAffiliates(BaseModel):
 
 class AStatistics(BaseModel):
     carriers = CharField()
-    countries = CharField()
+    countries = TextField()
     category = CharField()
     conversion_flow = CharField()
     exclusive = CharField()

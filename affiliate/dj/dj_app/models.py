@@ -42,7 +42,7 @@ class AAffiliates(models.Model):
 
 class AStatistics(models.Model):
     carriers = models.CharField(max_length=255, null=True)
-    countries = models.CharField(max_length=255, null=True)
+    countries = models.TextField(null=True)
     category = models.CharField(max_length=255, null=True)
     conversion_flow = models.CharField(max_length=255, null=True)
     exclusive = models.CharField(max_length=255, null=True)
