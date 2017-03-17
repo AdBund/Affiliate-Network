@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from .config import mysql
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -76,11 +79,11 @@ WSGI_APPLICATION = 'dj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'AffiliateNetwork',
-        'USER':'root',
-        'PASSWORD':'',
-        'HOST':'',
-        'PORT':'',
+        'NAME': mysql['name'],
+        'USER': mysql['user'],
+        'PASSWORD': mysql['passwd'],
+        'HOST': mysql['host'],
+        'PORT': mysql['port'],
     }
 }
 
