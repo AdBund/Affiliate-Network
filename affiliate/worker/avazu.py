@@ -7,6 +7,8 @@ import peewee
 
 from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
 from affiliate.rest.avazu import Avazu
+from affiliate.model.mongo_model import MCampaignStatistics
+import time
 
 
 def avazu():
@@ -57,7 +59,11 @@ def avazu():
             }
 
             try:
+                MCampaignStatistics(provider_id=provider.id,
+                                    date=datetime.datetime.now(),
+                                    raw=offer).save()
                 AAffiliates.insert(doc).execute()
+
             except peewee.IntegrityError:
                 logging.warning(' doc data already exists')
                 pass
