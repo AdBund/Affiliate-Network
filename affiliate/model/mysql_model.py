@@ -27,6 +27,7 @@ class AProvider(BaseModel):
 
 
 class AApiToken(BaseModel):
+    model = BooleanField(max_length=255, null=False)
     token = CharField(null=False)
     username = CharField()
     password = CharField()
@@ -79,7 +80,7 @@ class AStatistics(BaseModel):
         db_table = "statistics"
 
     indexes = (
-    ('affiliate_id', 'payout', 'conversion_flow', 'offer_type', 'provider_id', 'api_token_id', 'tracklink'), True)
+        ('affiliate_id', 'payout', 'conversion_flow', 'offer_type', 'provider_id', 'api_token_id', 'tracklink'), True)
 
 
 db.connect()

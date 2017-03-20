@@ -9,9 +9,13 @@
 @file: load_yaml.py
 @time: 2017/3/20 下午1:15
 """
+import traceback
+
 import os
 
 import yaml
+
+from affiliate.model.mysql_model import AAffiliates, AProvider
 
 
 class LoadYaml():
@@ -29,11 +33,43 @@ class LoadYaml():
     def get_content(self, data):
         content = self.y['content']
         provider_name = content['provider_name']
+        provider = AProvider.get(name=provider_name)
         offer_list = self.parse_content('offer_list', data)
+        params = ['conversion_flow', 'offer_id', 'name', 'offer_description', 'offer_type', 'carriers', 'category',
+                  'country', 'payout', 'preview_url', 'tracklink', 'lps']
+        kv = dict(zip(params, [''] * len(params)))
         for offer in offer_list:
-            conversion_flow = self.parse_content('conversion_flow', offer)
-            offer_id = self.parse_content('offer_id', offer)
-            print(conversion_flow, offer_id)
+            for k, v in kv.items():
+                kv[k] = self.parse_content(k, offer)
+            doc = {
+                'provider': provider,
+                # 'api_token': api_token,
+                'affiliate_identity': kv['offer_id'],
+                'name': kv['name'],
+            }
+
+            if 'lps' in kv:
+                for lp in kv['lps']:
+                    country = self.parse_content('country', lp)
+                    payout = self.parse_content('payout', lp)
+                    preview_url = self.parse_content('previewlink', lp)
+                    tracklink = self.parse_content('trackinglink', lp)
+
+                    statistics = {
+                        'carriers': self.parse_content('carrier', offer),
+                        'countries': country,
+                        'category': self.parse_content('category', offer),
+                        'provider': provider,
+                        # 'api_token': api_token,
+                        'affiliate': AAffiliates.get(provider=provider,
+                                                     affiliate_identity=self.parse_content('offer_id', offer)),
+                        'conversion_flow': self.parse_content('conversion_flow', offer),
+                        'offer_description': self.parse_content('offer_description', offer),
+                        'offer_type': self.parse_content('offer_type', offer),
+                        'payout': payout,
+                        'preview_url': preview_url,
+                        'tracklink': tracklink,
+                    }
 
     def parse_content(self, key, data):
         content = self.y['content']
@@ -41,7 +77,7 @@ class LoadYaml():
         import copy
         ret = copy.copy(data)
         for item in levels:
-            ret = ret[item]
+            ret = ret.get(item, '')
         return ret
 
 
@@ -847,5 +883,5 @@ if __name__ == '__main__':
         'pagesize': 200, 'totalnum': 65}
 
     ly = LoadYaml()
-    ly.get_login_params()
-    # ly.get_content(raw)
+    # ly.get_login_params()
+    ly.get_content(raw)

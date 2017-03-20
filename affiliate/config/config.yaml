@@ -21,12 +21,13 @@ content:
   carriers: carrier
   category: category
   lps: lps
-
-lps:
   country: country
   payout: payout
-  preview_url: previewlink
-  tracklink: track
+  preview_url: preview_url
+  tracklink: tracklink
+  previewlink: previewlink
+  trackinglink: trackinglink
+  carrier: carrier
 
 
 
