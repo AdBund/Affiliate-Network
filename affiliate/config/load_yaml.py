@@ -9,17 +9,21 @@
 @file: load_yaml.py
 @time: 2017/3/20 下午1:15
 """
+import os
 
 import yaml
 
 
 class LoadYaml():
-    def __init__(self, filename):
-        f = open(filename)
+    def __init__(self):
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.join(base_dir, 'config/config.yaml')
+        if not os.path.exists(path):
+            raise Exception('config file not exit')
+        f = open(path)
         self.y = yaml.load(f)
 
     def get_login_params(self):
-        print(self.y['login'])
         return self.y['login']
 
     def get_content(self, data):
@@ -842,6 +846,6 @@ if __name__ == '__main__':
          'traffictype': '111,112,105,110,109,102,101,103,104,108'}], 'code': 0, 'currentpage': 1,
         'pagesize': 200, 'totalnum': 65}
 
-    ly = LoadYaml('config.yaml')
+    ly = LoadYaml()
     ly.get_login_params()
     # ly.get_content(raw)
