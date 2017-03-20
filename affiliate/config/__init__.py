@@ -9,3 +9,4 @@
 @file: __init__.py.py
 @time: 2017/3/20 下午3:14
 """
+from .load_yaml import LoadYaml

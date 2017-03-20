@@ -5,6 +5,7 @@ import time
 import schedule
 from affiliate.worker import yeahmobi
 from affiliate.worker import avazu
+from affiliate.worker import affiliate_handle
 
 
 def job():
@@ -40,5 +41,10 @@ def main():
             logging.error(traceback.format_exc())
 
 
+def autoTest():
+    affiliate_handle.affiliate()
+
 if __name__ == '__main__':
-    main()
+    # main()
+
+    autoTest()

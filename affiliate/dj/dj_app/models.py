@@ -14,7 +14,7 @@ class AProvider(models.Model):
 
 
 class AApiToken(models.Model):
-    model = models.BooleanField(max_length=255, default=False)
+    mode = models.BooleanField(max_length=255, default=False)
     token = models.CharField(max_length=255)
     username = models.CharField(max_length=255, null=True)
     password = models.CharField(max_length=255, null=True)

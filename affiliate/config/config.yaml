@@ -1,14 +1,23 @@
 login:
-  url: http://api.c.avazutracking.net/performance/v2/getcampaigns.php
-  username: 123
-  passwd: 123
-  token: uuid
-  page:
-    page_offset: 1
-  page_size:
-    page_size: 2
-  total:
-    total_size: 3
+  provider: avazu
+  userId: 71
+  api_url: http://api.c.avazutracking.net/performance/v2/getcampaigns.php
+  username: uid
+  passwd:  # not be needed
+  token: sourceid
+  api_header:
+
+  pagesize: pagesize # select from db
+  page: page
+
+
+
+
+
+  totalnum: totalnum  # the data from api turn
+
+
+
 
 content:
   provider_name: avazu

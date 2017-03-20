@@ -23,8 +23,10 @@ if __name__ == '__main__':
                             provider=yeahmobi[0],
                             username='dsp@jetmobo.com',
                             password='Ihave2cars$',
-                            userId='71')
-    AApiToken.get_or_create(token='23011', provider=avazu[0], username='18629', userId=71)
-    AApiToken.get_or_create(token='22433', provider=avazu[0], username='18629', userId=71)
-    AApiToken.get_or_create(token='22417', provider=avazu[0], username='18629', userId=71)
-    AApiToken.get_or_create(token='22416', provider=avazu[0], username='18629', userId=71)
+                            userId='71',
+                            mode=True,
+                            )
+    AApiToken.get_or_create(token='23011', provider=avazu[0], username='18629', userId=71,mode=False)
+    AApiToken.get_or_create(token='22433', provider=avazu[0], username='18629', userId=71,mode=False)
+    AApiToken.get_or_create(token='22417', provider=avazu[0], username='18629', userId=71,mode=False)
+    AApiToken.get_or_create(token='22416', provider=avazu[0], username='18629', userId=71,mode=False)

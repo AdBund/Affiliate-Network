@@ -30,7 +30,7 @@ class LoadYaml():
     def get_login_params(self):
         return self.y['login']
 
-    def get_content(self, data):
+    def data_processing(self, data):
         content = self.y['content']
         provider_name = content['provider_name']
         provider = AProvider.get(name=provider_name)
@@ -884,4 +884,4 @@ if __name__ == '__main__':
 
     ly = LoadYaml()
     # ly.get_login_params()
-    ly.get_content(raw)
+    ly.data_processing(raw)
