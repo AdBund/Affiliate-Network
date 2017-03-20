@@ -1,0 +1,32 @@
+login:
+  url: http://api.c.avazutracking.net/performance/v2/getcampaigns.php
+  username: 123
+  passwd: 123
+  token: uuid
+  page:
+    page_offset: 1
+  page_size:
+    page_size: 2
+  total:
+    total_size: 3
+
+content:
+  provider_name: avazu
+  offer_list: campaigns
+  conversion_flow: convflow
+  offer_id:  cpnid
+  name: cpnname
+  offer_description: description
+  offer_type: traffictype
+  carriers: carrier
+  category: category
+  lps: lps
+
+lps:
+  country: country
+  payout: payout
+  preview_url: previewlink
+  tracklink: track
+
+
+
