@@ -27,7 +27,7 @@ class AProvider(BaseModel):
 
 
 class AApiToken(BaseModel):
-    model = BooleanField(max_length=255, null=False)
+    model = BooleanField(null=False)
     token = CharField(null=False)
     username = CharField()
     password = CharField()

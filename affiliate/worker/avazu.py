@@ -7,7 +7,7 @@ import peewee
 
 from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
 from affiliate.rest.avazu import Avazu
-from affiliate.model.mongo_model import MCampaignStatistics
+from affiliate.model.mongo_model import MGAAffiliates
 import time
 
 
@@ -59,9 +59,11 @@ def avazu():
             }
 
             try:
-                MCampaignStatistics(provider_id=provider.id,
-                                    date=datetime.datetime.now(),
-                                    raw=offer).save()
+                MGAAffiliates.objects(provider_id=provider.id, offer_id=offer_id).delete()
+                MGAAffiliates(provider_id=provider.id,
+                              offer_id=offer_id,
+                              date=datetime.datetime.now(),
+                              raw=offer).save()
                 AAffiliates.insert(doc).execute()
 
             except peewee.IntegrityError:
