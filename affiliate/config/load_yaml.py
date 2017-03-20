@@ -11,11 +11,23 @@
 """
 import traceback
 
+import datetime
 import os
+import peewee
 
 import yaml
 
-from affiliate.model.mysql_model import AAffiliates, AProvider
+import datetime
+import json
+import logging
+import traceback
+
+import peewee
+
+from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
+from affiliate.rest.avazu import Avazu
+from affiliate.model.mongo_model import MGAAffiliates
+import time
 
 
 class LoadYaml():
@@ -30,7 +42,7 @@ class LoadYaml():
     def get_login_params(self):
         return self.y['login']
 
-    def data_processing(self, data):
+    def data_processing(self, data, api_token):
         content = self.y['content']
         provider_name = content['provider_name']
         provider = AProvider.get(name=provider_name)
@@ -43,10 +55,26 @@ class LoadYaml():
                 kv[k] = self.parse_content(k, offer)
             doc = {
                 'provider': provider,
-                # 'api_token': api_token,
-                'affiliate_identity': kv['offer_id'],
+                'api_token': api_token,
+                'affiliate_identity': str(kv['offer_id']),
                 'name': kv['name'],
             }
+
+            try:
+                # mango
+                MGAAffiliates.objects(provider_id=provider.id, offer_id=kv['offer_id']).delete()
+                MGAAffiliates(provider_id=provider.id,
+                              offer_id=kv['offer_id'],
+                              date=datetime.datetime.now(),
+                              raw=offer).save()
+                # mysql
+                AAffiliates.insert(doc).execute()
+            except peewee.IntegrityError:
+                logging.warning(' doc data already exists')
+                pass
+            except Exception as e:
+                logging.warning(e)
+                pass
 
             if 'lps' in kv:
                 for lp in kv['lps']:
@@ -60,9 +88,9 @@ class LoadYaml():
                         'countries': country,
                         'category': self.parse_content('category', offer),
                         'provider': provider,
-                        # 'api_token': api_token,
+                        'api_token': api_token,
                         'affiliate': AAffiliates.get(provider=provider,
-                                                     affiliate_identity=self.parse_content('offer_id', offer)),
+                                                     affiliate_identity=str(self.parse_content('offer_id', offer))),
                         'conversion_flow': self.parse_content('conversion_flow', offer),
                         'offer_description': self.parse_content('offer_description', offer),
                         'offer_type': self.parse_content('offer_type', offer),
@@ -70,6 +98,16 @@ class LoadYaml():
                         'preview_url': preview_url,
                         'tracklink': tracklink,
                     }
+
+                    try:
+                        AStatistics.insert(statistics).execute()
+                    except peewee.IntegrityError:
+                        logging.warning(' statistics data already exists')
+                        pass
+                    except Exception as e:
+                        traceback.print_exc()
+                        logging.warning(e)
+                        pass
 
     def parse_content(self, key, data):
         content = self.y['content']

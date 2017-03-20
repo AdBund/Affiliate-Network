@@ -42,4 +42,4 @@ def affiliate():
         request = OfferRequest(api_url, params=params) # todo : header
         offers = request.get_all_offer()
 
-        yaml.data_processing(offers)
+        yaml.data_processing(offers,api_token)
