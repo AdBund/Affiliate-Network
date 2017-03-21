@@ -1,5 +1,4 @@
 import datetime
-import json
 import logging
 import traceback
 
@@ -7,8 +6,6 @@ import peewee
 
 from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
 from affiliate.rest.avazu import Avazu
-from affiliate.model.mongo_model import MGAAffiliates
-import time
 
 
 def avazu():

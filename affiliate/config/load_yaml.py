@@ -11,8 +11,8 @@
 """
 import os
 import yaml
-from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
 from jsonpath_rw import jsonpath, parse, Parent
+from affiliate.model.mongo_model import Provider,ApiToken,Affiliates
 
 
 class LoadYaml():
@@ -31,7 +31,7 @@ class LoadYaml():
         login = self.y['login']
         content = self.y['content']
         provider_name = login['provider']
-        provider = AProvider.get(name=provider_name)
+        provider = Provider.objects.get(name=provider_name)
 
         loop_path = content['loop_path']
         parents = content['parents']
@@ -41,7 +41,7 @@ class LoadYaml():
 
         for loop in parse(loop_path).find(data):
             tmp = {}
-            tmp['provider'] = provider.id
+            tmp['provider'] = str(provider.id)
             tmp['api_token'] = api_token
 
             for child in childs:
@@ -60,19 +60,18 @@ class LoadYaml():
                 if isinstance(country, str):
                     # todo:
                     print(country)
+                    tmp['country'] = [tmp['country']]
 
             save_data.append(tmp)
 
             print(save_data)
 
 
+
 def parse_content(self, key, data):
     content = self.y['content']
-    levels = content[key].split(' ')
-    import copy
-    ret = copy.copy(data)
-    for item in levels:
-        ret = ret.get(item, '')
+    levels = content[key]
+    ret = data.get(levels, '')
     return ret
 
 

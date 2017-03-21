@@ -1,6 +1,6 @@
 from affiliate.config import LoadYaml
-from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
 from affiliate.rest.affiliate_request import OfferRequest
+from affiliate.model.mongo_model import Provider, ApiToken
 
 
 def affiliate():
@@ -26,9 +26,8 @@ def affiliate():
     params2_k = login_content['params2_k']
     params2_v = login_content['params2_v']
 
-    provider = AProvider.get(name=provider)
-    api_tokens = (AApiToken.select(AApiToken).join(AProvider).where(AApiToken.provider_id == provider.id,
-                                                                    AApiToken.userId == userId).order_by())
+    provider = Provider.objects.get(name=provider)
+    api_tokens = ApiToken.objects.filter(provider_id=str(provider.id), user_id=str(userId))
 
     for api_token in api_tokens:
         mode = api_token.mode  # if true:only need token,else:username&pwd

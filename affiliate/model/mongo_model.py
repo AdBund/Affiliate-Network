@@ -46,3 +46,6 @@ class Affiliates(Document):
     def save_all(cls, data):
         [cls.objects.create(**item) for item in data]
 
+
+ApiToken.objects.order_by('user_id')
+
