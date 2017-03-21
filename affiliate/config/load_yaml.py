@@ -9,25 +9,10 @@
 @file: load_yaml.py
 @time: 2017/3/20 下午1:15
 """
-import traceback
-
-import datetime
 import os
-import peewee
-
 import yaml
-
-import datetime
-import json
-import logging
-import traceback
-
-import peewee
-
 from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
-from affiliate.rest.avazu import Avazu
-from affiliate.model.mongo_model import MGAAffiliates
-import time
+from jsonpath_rw import jsonpath, parse, Parent
 
 
 class LoadYaml():
@@ -43,80 +28,52 @@ class LoadYaml():
         return self.y['login']
 
     def data_processing(self, data, api_token):
+        login = self.y['login']
         content = self.y['content']
-        provider_name = content['provider_name']
+        provider_name = login['provider']
         provider = AProvider.get(name=provider_name)
-        offer_list = self.parse_content('offer_list', data)
-        params = ['conversion_flow', 'offer_id', 'name', 'offer_description', 'offer_type', 'carriers', 'category',
-                  'country', 'payout', 'preview_url', 'tracklink', 'lps']
-        kv = dict(zip(params, [''] * len(params)))
-        for offer in offer_list:
-            for k, v in kv.items():
-                kv[k] = self.parse_content(k, offer)
-            doc = {
-                'provider': provider,
-                'api_token': api_token,
-                'affiliate_identity': str(kv['offer_id']),
-                'name': kv['name'],
-            }
 
-            try:
-                # mango
-                MGAAffiliates.objects(provider_id=provider.id, offer_id=kv['offer_id']).delete()
-                MGAAffiliates(provider_id=provider.id,
-                              offer_id=kv['offer_id'],
-                              date=datetime.datetime.now(),
-                              raw=offer).save()
-                # mysql
-                AAffiliates.insert(doc).execute()
-            except peewee.IntegrityError:
-                logging.warning(' doc data already exists')
-                pass
-            except Exception as e:
-                logging.warning(e)
-                pass
+        loop_path = content['loop_path']
+        parents = content['parents']
+        childs = content['childs']
 
-            if 'lps' in kv:
-                for lp in kv['lps']:
-                    country = self.parse_content('country', lp)
-                    payout = self.parse_content('payout', lp)
-                    preview_url = self.parse_content('previewlink', lp)
-                    tracklink = self.parse_content('trackinglink', lp)
+        save_data = []
 
-                    statistics = {
-                        'carriers': self.parse_content('carrier', offer),
-                        'countries': country,
-                        'category': self.parse_content('category', offer),
-                        'provider': provider,
-                        'api_token': api_token,
-                        'affiliate': AAffiliates.get(provider=provider,
-                                                     affiliate_identity=str(self.parse_content('offer_id', offer))),
-                        'conversion_flow': self.parse_content('conversion_flow', offer),
-                        'offer_description': self.parse_content('offer_description', offer),
-                        'offer_type': self.parse_content('offer_type', offer),
-                        'payout': payout,
-                        'preview_url': preview_url,
-                        'tracklink': tracklink,
-                    }
+        for loop in parse(loop_path).find(data):
+            tmp = {}
+            tmp['provider'] = provider.id
+            tmp['api_token'] = api_token
 
-                    try:
-                        AStatistics.insert(statistics).execute()
-                    except peewee.IntegrityError:
-                        logging.warning(' statistics data already exists')
-                        pass
-                    except Exception as e:
-                        traceback.print_exc()
-                        logging.warning(e)
-                        pass
+            for child in childs:
+                element_keywords = childs[child]
 
-    def parse_content(self, key, data):
-        content = self.y['content']
-        levels = content[key].split(' ')
-        import copy
-        ret = copy.copy(data)
-        for item in levels:
-            ret = ret.get(item, '')
-        return ret
+                tmp[child] = loop.value[element_keywords]
+
+                first_parent = Parent().find(Parent().find(loop)[0])[0]
+                for parent in parents:
+                    element_keywords = parents[parent]
+                    tmp[parent] = first_parent.value[element_keywords]
+
+            # country array
+            if 'country' in tmp:
+                country = tmp['country']
+                if isinstance(country, str):
+                    # todo:
+                    print(country)
+
+            save_data.append(tmp)
+
+            print(save_data)
+
+
+def parse_content(self, key, data):
+    content = self.y['content']
+    levels = content[key].split(' ')
+    import copy
+    ret = copy.copy(data)
+    for item in levels:
+        ret = ret.get(item, '')
+    return ret
 
 
 if __name__ == '__main__':
@@ -922,4 +879,4 @@ if __name__ == '__main__':
 
     ly = LoadYaml()
     # ly.get_login_params()
-    ly.data_processing(raw)
+    ly.data_processing(raw, '23011')

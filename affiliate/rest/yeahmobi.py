@@ -19,8 +19,8 @@ class Yeahmobi():
             'page': 10,
         }
         response = requests.request("GET", url, params=query)
-        # return response.text
-        return response.json()
+        return response.text
+        # return response.json()
 
 
 if __name__ == '__main__':

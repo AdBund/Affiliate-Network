@@ -12,8 +12,6 @@ login:
   params2_k:
   params2_v:
 
-
-
   api_header:
 
   # need:provider,userId,api_url,token
@@ -21,34 +19,43 @@ login:
   pagesize: pagesize # select from db
   page: page
 
-
-
-
-
-
   totalnum: totalnum  # the data from api turn
 
 
 
 
 content:
-  provider_name: avazu
-  offer_list: campaigns
-  conversion_flow: convflow
-  offer_id:  cpnid
-  name: cpnname
-  offer_description: description
-  offer_type: traffictype
-  carriers: carrier
-  category: category
-  lps: lps
-  country: country
-  payout: payout
-  preview_url: preview_url
-  tracklink: tracklink
-  previewlink: previewlink
+  loop_path: campaigns[*].lps[*]
   trackinglink: trackinglink
-  carrier: carrier
+
+  parents:
+    offer_id: cpnid
+    name: cpnname
+    banner: banner
+  childs:
+    trackinglink: trackinglink
+    country: country
+    payout: payout
+    previewlink: previewlink
+
+
+#  provider_name: avazu
+#  offer_list: campaigns
+#  conversion_flow: convflow
+#  offer_id:  cpnid
+#  name: cpnname
+#  offer_description: description
+#  offer_type: traffictype
+#  carriers: carrier
+#  category: category
+#  lps: lps
+#  country: country
+#  payout: payout
+#  preview_url: preview_url
+#  tracklink: tracklink
+#  previewlink: previewlink
+#  trackinglink: trackinglink
+#  carrier: carrier
 
 
 
