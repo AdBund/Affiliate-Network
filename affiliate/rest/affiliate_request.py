@@ -18,6 +18,3 @@ class OfferRequest(object):
         pass  # todo
 
 
-if __name__ == '__main__':
-    # request = OfferRequest()
-    pass

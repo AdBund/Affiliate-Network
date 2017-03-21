@@ -3,12 +3,24 @@ login:
   userId: 71
   api_url: http://api.c.avazutracking.net/performance/v2/getcampaigns.php
   username: uid
-  passwd:  # not be needed
+  passwd:
   token: sourceid
+  policy_k: policy
+  policy_v: 1,2,3,4
+  params1_k:
+  params1_v:
+  params2_k:
+  params2_v:
+
+
+
   api_header:
+
+  # need:provider,userId,api_url,token
 
   pagesize: pagesize # select from db
   page: page
+
 
 
 
