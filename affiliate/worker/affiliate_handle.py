@@ -1,6 +1,6 @@
 from affiliate.config import LoadYaml
 from affiliate.rest.affiliate_request import OfferRequest
-from affiliate.model.mongo_model import Provider, ApiToken
+from affiliate.model.mongo_model import Provider, ApiToken,Affiliates
 
 
 def affiliate():
@@ -50,11 +50,13 @@ def affiliate():
         if params2_k is not None:
             params[params2_k] = params2_v
 
-        print(params)
+        # print(params)
 
         # todo :for
 
         request = OfferRequest(api_url, params=params)  # todo : header
         offers = request.get_all_offer()
 
-        yaml.data_processing(offers, api_token)
+        data = yaml.data_processing(offers, api_token)
+        Affiliates.save_all(data)
+

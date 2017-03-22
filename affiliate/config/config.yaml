@@ -33,10 +33,10 @@ content:
     name: cpnname
     banner: banner
   childs:
-    trackinglink: trackinglink
+    tracking_link: trackinglink
     country: country
     payout: payout
-    previewlink: previewlink
+    preview_link: previewlink
 
 
 #  provider_name: avazu

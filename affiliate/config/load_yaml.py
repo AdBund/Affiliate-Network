@@ -41,8 +41,8 @@ class LoadYaml():
 
         for loop in parse(loop_path).find(data):
             tmp = {}
-            tmp['provider'] = str(provider.id)
-            tmp['api_token'] = api_token
+            tmp['provider_id'] = str(provider.id)
+            tmp['api_token'] = str(api_token.id)
 
             for child in childs:
                 element_keywords = childs[child]
@@ -61,10 +61,13 @@ class LoadYaml():
                     # todo:
                     print(country)
                     tmp['country'] = [tmp['country']]
+            tmp['offer_id'] = str(tmp['offer_id'])
+            tmp['payout'] = str(tmp['payout'])
 
             save_data.append(tmp)
 
-            print(save_data)
+            # print(save_data)
+        return save_data
 
 
 
