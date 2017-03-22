@@ -50,7 +50,7 @@ def affiliate():
         if params2_k is not None:
             params[params2_k] = params2_v
 
-        # print(params)
+        print(params)
 
         # todo :for
 

@@ -24,38 +24,14 @@ login:
 
 
 
-content:
+affiliate:
   loop_path: campaigns[*].lps[*]
-  trackinglink: trackinglink
-
-  parents:
-    offer_id: cpnid
-    name: cpnname
-    banner: banner
-  childs:
-    tracking_link: trackinglink
+  contents:
+    trackinglink: trackinglink
     country: country
     payout: payout
     preview_link: previewlink
-
-
-#  provider_name: avazu
-#  offer_list: campaigns
-#  conversion_flow: convflow
-#  offer_id:  cpnid
-#  name: cpnname
-#  offer_description: description
-#  offer_type: traffictype
-#  carriers: carrier
-#  category: category
-#  lps: lps
-#  country: country
-#  payout: payout
-#  preview_url: preview_url
-#  tracklink: tracklink
-#  previewlink: previewlink
-#  trackinglink: trackinglink
-#  carrier: carrier
-
-
-
+    offer_id: _ _ cpnid
+    name: _ _ cpnname
+    banner: _ _ banner
+    bid: _ _ bids * bid

@@ -12,13 +12,15 @@
 import os
 import yaml
 from jsonpath_rw import jsonpath, parse, Parent
-from affiliate.model.mongo_model import Provider,ApiToken,Affiliates
+from affiliate.model.mongo_model import Provider, ApiToken, Affiliates
+from affiliate.rest.yeahmobi import Yeahmobi
 
 
 class LoadYaml():
     def __init__(self):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        path = os.path.join(base_dir, 'config/config.yaml')
+        # path = os.path.join(base_dir, 'config\config.yaml')
+        path = os.path.join(base_dir, 'config\yeahmobi_config.yaml')
         if not os.path.exists(path):
             raise Exception('config file not exit')
         f = open(path)
@@ -29,45 +31,126 @@ class LoadYaml():
 
     def data_processing(self, data, api_token):
         login = self.y['login']
-        content = self.y['content']
+        affiliate = self.y['affiliate']
         provider_name = login['provider']
         provider = Provider.objects.get(name=provider_name)
-
-        loop_path = content['loop_path']
-        parents = content['parents']
-        childs = content['childs']
-
+        loop_path = affiliate['loop_path']
+        contents = affiliate['contents']
         save_data = []
 
-        for loop in parse(loop_path).find(data):
+
+        if isinstance(parse(loop_path).find(data)[0].value, dict):
+            self.offer_dict(api_token, contents, data, loop_path, provider, save_data)
+        if isinstance(parse(loop_path).find(data)[0].value, list):
+            self.offerId_list(api_token, contents, data, loop_path, provider, save_data)
+
+            # for k, v in dict(parse(loop_path).find(data)[0].value).items():
+            #     print(k)
+            # print(k, v)
+
+    def offer_dict(self, api_token, contents, data, loop_path, provider, save_data):
+        for k, v in dict(parse(loop_path).find(data)[0].value).items():
             tmp = {}
             tmp['provider_id'] = str(provider.id)
-            tmp['api_token'] = str(api_token.id)
+            tmp['api_token'] = str(api_token)
 
-            for child in childs:
-                element_keywords = childs[child]
+            if 'offer_id' not in contents:
+                tmp['offer_id'] = str(k)
+            for content in contents:
+                element_keywords = contents[content]
 
-                tmp[child] = loop.value[element_keywords]
+                if '_ _ ' not in element_keywords:
+                    tmp[content] = v[element_keywords]
 
-                first_parent = Parent().find(Parent().find(loop)[0])[0]
-                for parent in parents:
-                    element_keywords = parents[parent]
-                    tmp[parent] = first_parent.value[element_keywords]
 
-            # country array
-            if 'country' in tmp:
-                country = tmp['country']
-                if isinstance(country, str):
-                    # todo:
-                    print(country)
-                    tmp['country'] = [tmp['country']]
-            tmp['offer_id'] = str(tmp['offer_id'])
-            tmp['payout'] = str(tmp['payout'])
+                # if ('_ _ ' in element_keywords) and ('*' not in element_keywords):
+                #     first_parent = Parent().find(Parent().find(v)[0])[0]
+                #     element_keywords = element_keywords[4:]
+                #     tmp[content] = first_parent.value[element_keywords]  # todo :error:if ont find
+                #
+                # if '_ _ ' in content and ' * ' in content:
+                #     first_parent = Parent().find(Parent().find(v)[0])[0]
+                #     nPos = element_keywords.index('*')
+                #     element_keywords = element_keywords[4:nPos - 1]
+                #     element_parent = element_keywords
+                #     element_child = element_keywords[(nPos + 2):]
+                #     parent_lists = first_parent.value[element_parent]
+                #
+                #     parent_l_array = []
+                #     for parent_l in parent_lists:
+                #         parent_l_array.append(parent_l.value[element_child])
+                #
+                #     tmp[element_child] = parent_l_array
+                #     # todo :1.th same one ;2.diff one
+
+                # country array
+                if 'country' in tmp:
+                    country = tmp['country']
+                    if isinstance(country, str):
+                        # todo:
+                        tmp['country'] = [tmp['country']]
+                if 'offer_id' in tmp:
+                    tmp['offer_id'] = str(tmp['offer_id'])
+                if 'payout' in tmp:
+                    tmp['payout'] = str(tmp['payout'])
 
             save_data.append(tmp)
+        print(save_data)
+        print('end')
+        # return save_data
 
-            # print(save_data)
-        return save_data
+
+
+    def offerId_list(self, api_token, contents, data, loop_path, provider, save_data):
+        print('###########')
+        for loop in parse(loop_path).find(data):
+            print('----------------')
+            tmp = {}
+            tmp['provider_id'] = str(provider.id)
+            tmp['api_token'] = str(api_token)
+
+            for content in contents:
+                element_keywords = contents[content]
+
+                if '_ _ ' not in element_keywords:
+                    tmp[content] = loop.value[element_keywords]
+
+                if ('_ _ ' in element_keywords) and ('*' not in element_keywords):
+                    first_parent = Parent().find(Parent().find(loop)[0])[0]
+                    element_keywords = element_keywords[4:]
+                    tmp[content] = first_parent.value[element_keywords]  # todo :error:if ont find
+
+                if '_ _ ' in content and ' * ' in content:
+                    first_parent = Parent().find(Parent().find(loop)[0])[0]
+                    nPos = element_keywords.index('*')
+                    element_keywords = element_keywords[4:nPos - 1]
+                    element_parent = element_keywords
+                    element_child = element_keywords[(nPos + 2):]
+                    parent_lists = first_parent.value[element_parent]
+
+                    parent_l_array = []
+                    for parent_l in parent_lists:
+                        parent_l_array.append(parent_l.value[element_child])
+
+                    tmp[element_child] = parent_l_array
+                    # todo :1.th same one ;2.diff one
+
+                # country array
+                if 'country' in tmp:
+                    country = tmp['country']
+                    if isinstance(country, str):
+                        # todo:
+                        tmp['country'] = [tmp['country']]
+                if 'offer_id' in tmp:
+                    tmp['offer_id'] = str(tmp['offer_id'])
+                if 'payout' in tmp:
+                    tmp['payout'] = str(tmp['payout'])
+
+            save_data.append(tmp)
+        print(save_data)
+        print('end')
+        # return save_data
+
 
 
 
@@ -79,7 +162,7 @@ def parse_content(self, key, data):
 
 
 if __name__ == '__main__':
-    raw = {'campaigns': [{
+    avazu = {'campaigns': [{
         'banner': '["http:\\/\\/cdn.avazu.net\\/zips\\/201505\\/098\\/e62dca38e59753c18fd831dc096ede0f.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201505\\/023\\/bbf2368ee99e4600cd4a7ba673cfca29.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/114\\/3552018890dc864b9b758c8b7857fa45.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/122\\/9d730fe3c9d15a999bbf64d115ac48da.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/031\\/eed2f827d96ad5ce8d6eb7afc0528879.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/108\\/e5f1d3da1cee7f894c7a987e8f6a3d5d.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/096\\/ed87d10ce74c845daf937bd20ab01c73.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/031\\/833cb72da6e496ebf42cce700db083a0.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201505\\/023\\/bbf2368ee99e4600cd4a7ba673cfca29.zip","http:\\/\\/cdn.avazu.net\\/zips\\/201510\\/038\\/68a329461bfc0fa741cf3f8050732c7b.zip"]',
         'carrier': 'WIFI,All Poland Carriers', 'category': '107', 'conntype': '1,2',
         'convflow': '108', 'cpnid': 9342, 'cpnname': 'Xtubes Poland Mobile(Adult)',
@@ -879,6 +962,10 @@ if __name__ == '__main__':
          'traffictype': '111,112,105,110,109,102,101,103,104,108'}], 'code': 0, 'currentpage': 1,
         'pagesize': 200, 'totalnum': 65}
 
+    api_id = 'dsp@jetmobo.com'
+    api_token = '67951dc0eec37c70b7cc33bfb9b1435d'
+    yeahmobi = Yeahmobi(api_id, api_token)
+    yeahmobi_result = yeahmobi.get_all_offer()
     ly = LoadYaml()
     # ly.get_login_params()
-    ly.data_processing(raw, '23011')
+    ly.data_processing(yeahmobi_result, api_token)

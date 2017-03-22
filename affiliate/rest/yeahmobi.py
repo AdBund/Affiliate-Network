@@ -16,11 +16,11 @@ class Yeahmobi():
             'api_id': self.api_id,
             'api_token': self.api_token,
             'limit': 100,
-            'page': 10,
+            'page': 1,
         }
         response = requests.request("GET", url, params=query)
-        return response.text
-        # return response.json()
+        # return response.text
+        return response.json()
 
 
 if __name__ == '__main__':

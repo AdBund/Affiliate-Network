@@ -1,0 +1,19 @@
+login:
+  provider: yeahmobi
+  userId: 71
+  api_url: http://sync.yeahmobi.com/sync/offer/get
+  username: api_id
+  token: api_token
+  # need:provider,userId,api_url,token
+  pagesize: limit # select from db
+  page: page
+
+
+affiliate:
+  loop_path: data.data
+  contents:
+    trackinglink: tracklink
+    country: countries
+    payout: payout
+    preview_link: preview_url
+    name: name

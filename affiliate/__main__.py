@@ -44,7 +44,7 @@ def main():
 def autoTest():
     affiliate_handle.affiliate()
 
+
 if __name__ == '__main__':
     # main()
     autoTest()
-
