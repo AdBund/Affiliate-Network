@@ -19,10 +19,7 @@ class AApiToken(models.Model):
     username = models.CharField(max_length=255, null=True)
     password = models.CharField(max_length=255, null=True)
     userId = models.CharField(max_length=255, null=True)
-    # initialized = BooleanField(default=False)
     provider = models.ForeignKey(AProvider)
-
-    # provider=ForeignKeyField(AProvider,related_name='id')
 
     class Meta:
         db_table = "api_tokens"
@@ -37,7 +34,6 @@ class AAffiliates(models.Model):
 
     class Meta:
         db_table = "affiliates"
-
         unique_together = ('provider', 'affiliate_identity')
 
 

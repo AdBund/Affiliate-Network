@@ -2,15 +2,6 @@
 # encoding: utf-8
 
 """
-@author: amigo
-@contact: 88315203@qq.com
-@phone: 15618318407
-@software: PyCharm
-@file: init_users.py
-@time: 2017/3/17 下午2:20
-"""
-
-"""
 初始化用户
 """
 

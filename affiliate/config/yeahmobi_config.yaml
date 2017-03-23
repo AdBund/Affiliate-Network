@@ -4,9 +4,10 @@ login:
   api_url: http://sync.yeahmobi.com/sync/offer/get
   username: api_id
   token: api_token
-  # need:provider,userId,api_url,token
-  pagesize: limit # select from db
+  pagesize: limit
   page: page
+
+  other_params:
 
 
 affiliate:
@@ -17,4 +18,3 @@ affiliate:
     payout: payout
     preview_link: preview_url
     name: name
-#    offer_id: #.key

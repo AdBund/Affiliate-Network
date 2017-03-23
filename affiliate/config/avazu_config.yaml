@@ -11,16 +11,12 @@ login:
   params1_v:
   params2_k:
   params2_v:
-
-  api_header:
-
   # need:provider,userId,api_url,token
-
   pagesize: pagesize # select from db
   page: page
 
-  totalnum: totalnum  # the data from api turn
-
+  other_params:
+    totalnum: totalnum  # the data from api turn
 
 
 

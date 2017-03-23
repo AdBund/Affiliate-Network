@@ -18,7 +18,6 @@ class OfferIdList():
             offer_id = loop_d.path.fields[0]  # todo :try:find other way
             tmp['offer_id'] = str(offer_id)
             loop_value = loop_d.value
-            # print(loop_value['payout'])
             for content in contents:
                 element_keywords = contents[content]
                 tmp[content] = loop_value[element_keywords]
@@ -35,5 +34,3 @@ class OfferIdList():
                 tmp['payout'] = str(tmp['payout'])
             save_data.append(tmp)
         return save_data
-        # for k, v in dict(parse(loop_path).find(data)[0].value).items():
-        #     pass

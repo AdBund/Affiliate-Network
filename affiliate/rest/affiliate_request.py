@@ -8,11 +8,10 @@ class OfferRequest(object):
 
     def get_all_offer(self, method="GET"):
         url = self.url
-        # header = self.header
         params = self.params
-
         response = requests.request(method, url=url, params=params)
-        return response.json()
+        print(response.text)
+        # return response.json()
 
     def offer_operate(self):
         pass  # todo
