@@ -10,10 +10,11 @@ login:
 
 
 affiliate:
-  loop_path: data.data
+  loop_path: data.data.*
   contents:
     trackinglink: tracklink
     country: countries
     payout: payout
     preview_link: preview_url
     name: name
+#    offer_id: #.key

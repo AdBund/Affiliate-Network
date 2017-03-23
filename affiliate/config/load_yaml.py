@@ -14,6 +14,8 @@ import yaml
 from jsonpath_rw import jsonpath, parse, Parent
 from affiliate.model.mongo_model import Provider, ApiToken, Affiliates
 from affiliate.rest.yeahmobi import Yeahmobi
+from affiliate.config.offer_id_list import OfferIdList
+from affiliate.config.number_id_list import NumberIdList
 
 
 class LoadYaml():
@@ -38,120 +40,21 @@ class LoadYaml():
         contents = affiliate['contents']
         save_data = []
 
+        if 'offer_id' not in contents:
+            print('come in offer_id_list.py')
+            save_data = OfferIdList().processing_data(api_token, contents, data, loop_path, provider, save_data)
+        else:
+            print('come in number_id_list')
+            save_data = NumberIdList().processing_data(api_token, contents, data, loop_path, provider, save_data)
 
-        if isinstance(parse(loop_path).find(data)[0].value, dict):
-            self.offer_dict(api_token, contents, data, loop_path, provider, save_data)
-        if isinstance(parse(loop_path).find(data)[0].value, list):
-            self.offerId_list(api_token, contents, data, loop_path, provider, save_data)
+        # print(save_data)
+        return save_data
 
-            # for k, v in dict(parse(loop_path).find(data)[0].value).items():
-            #     print(k)
-            # print(k, v)
+    def list_to_dict(self, data):
+        if isinstance(data, list):
+            return dict(zip(range(len(data)), data))
 
-    def offer_dict(self, api_token, contents, data, loop_path, provider, save_data):
-        for k, v in dict(parse(loop_path).find(data)[0].value).items():
-            tmp = {}
-            tmp['provider_id'] = str(provider.id)
-            tmp['api_token'] = str(api_token)
-
-            if 'offer_id' not in contents:
-                tmp['offer_id'] = str(k)
-            for content in contents:
-                element_keywords = contents[content]
-
-                if '_ _ ' not in element_keywords:
-                    tmp[content] = v[element_keywords]
-
-
-                # if ('_ _ ' in element_keywords) and ('*' not in element_keywords):
-                #     first_parent = Parent().find(Parent().find(v)[0])[0]
-                #     element_keywords = element_keywords[4:]
-                #     tmp[content] = first_parent.value[element_keywords]  # todo :error:if ont find
-                #
-                # if '_ _ ' in content and ' * ' in content:
-                #     first_parent = Parent().find(Parent().find(v)[0])[0]
-                #     nPos = element_keywords.index('*')
-                #     element_keywords = element_keywords[4:nPos - 1]
-                #     element_parent = element_keywords
-                #     element_child = element_keywords[(nPos + 2):]
-                #     parent_lists = first_parent.value[element_parent]
-                #
-                #     parent_l_array = []
-                #     for parent_l in parent_lists:
-                #         parent_l_array.append(parent_l.value[element_child])
-                #
-                #     tmp[element_child] = parent_l_array
-                #     # todo :1.th same one ;2.diff one
-
-                # country array
-                if 'country' in tmp:
-                    country = tmp['country']
-                    if isinstance(country, str):
-                        # todo:
-                        tmp['country'] = [tmp['country']]
-                if 'offer_id' in tmp:
-                    tmp['offer_id'] = str(tmp['offer_id'])
-                if 'payout' in tmp:
-                    tmp['payout'] = str(tmp['payout'])
-
-            save_data.append(tmp)
-        print(save_data)
-        print('end')
-        # return save_data
-
-
-
-    def offerId_list(self, api_token, contents, data, loop_path, provider, save_data):
-        print('###########')
-        for loop in parse(loop_path).find(data):
-            print('----------------')
-            tmp = {}
-            tmp['provider_id'] = str(provider.id)
-            tmp['api_token'] = str(api_token)
-
-            for content in contents:
-                element_keywords = contents[content]
-
-                if '_ _ ' not in element_keywords:
-                    tmp[content] = loop.value[element_keywords]
-
-                if ('_ _ ' in element_keywords) and ('*' not in element_keywords):
-                    first_parent = Parent().find(Parent().find(loop)[0])[0]
-                    element_keywords = element_keywords[4:]
-                    tmp[content] = first_parent.value[element_keywords]  # todo :error:if ont find
-
-                if '_ _ ' in content and ' * ' in content:
-                    first_parent = Parent().find(Parent().find(loop)[0])[0]
-                    nPos = element_keywords.index('*')
-                    element_keywords = element_keywords[4:nPos - 1]
-                    element_parent = element_keywords
-                    element_child = element_keywords[(nPos + 2):]
-                    parent_lists = first_parent.value[element_parent]
-
-                    parent_l_array = []
-                    for parent_l in parent_lists:
-                        parent_l_array.append(parent_l.value[element_child])
-
-                    tmp[element_child] = parent_l_array
-                    # todo :1.th same one ;2.diff one
-
-                # country array
-                if 'country' in tmp:
-                    country = tmp['country']
-                    if isinstance(country, str):
-                        # todo:
-                        tmp['country'] = [tmp['country']]
-                if 'offer_id' in tmp:
-                    tmp['offer_id'] = str(tmp['offer_id'])
-                if 'payout' in tmp:
-                    tmp['payout'] = str(tmp['payout'])
-
-            save_data.append(tmp)
-        print(save_data)
-        print('end')
-        # return save_data
-
-
+        return data
 
 
 def parse_content(self, key, data):
@@ -962,10 +865,12 @@ if __name__ == '__main__':
          'traffictype': '111,112,105,110,109,102,101,103,104,108'}], 'code': 0, 'currentpage': 1,
         'pagesize': 200, 'totalnum': 65}
 
+    ly = LoadYaml()
     api_id = 'dsp@jetmobo.com'
     api_token = '67951dc0eec37c70b7cc33bfb9b1435d'
     yeahmobi = Yeahmobi(api_id, api_token)
     yeahmobi_result = yeahmobi.get_all_offer()
-    ly = LoadYaml()
-    # ly.get_login_params()
     ly.data_processing(yeahmobi_result, api_token)
+    # avazu_api_id = '18629'
+    # avazu_token = '23011'
+    # ly.data_processing(avazu, avazu_token)
