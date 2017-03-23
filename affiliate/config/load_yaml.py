@@ -11,8 +11,8 @@ from affiliate.config.number_id_list import NumberIdList
 class LoadYaml():
     def __init__(self):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        path = os.path.join(base_dir, 'config\\avazu_config.yaml')
-        # path = os.path.join(base_dir, 'config\yeahmobi_config.yaml')  # todo
+        # path = os.path.join(base_dir, 'config\\avazu_config.yaml')
+        path = os.path.join(base_dir, 'config\yeahmobi_config.yaml')  # todo
         if not os.path.exists(path):
             raise Exception('config file not exit')
         f = open(path)

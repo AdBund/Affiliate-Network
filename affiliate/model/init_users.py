@@ -15,7 +15,7 @@ if __name__ == '__main__':
                            username='dsp@jetmobo.com',
                            password='Ihave2cars$',
                            user_id='71',
-                           mode=True)
+                           mode=False)
     ApiToken.get_or_create(token='23011', provider_id=str(avazu.id), username='18629', user_id='71', mode=False)
     ApiToken.get_or_create(token='22433', provider_id=str(avazu.id), username='18629', user_id='71', mode=False)
     ApiToken.get_or_create(token='22417', provider_id=str(avazu.id), username='18629', user_id='71', mode=False)
