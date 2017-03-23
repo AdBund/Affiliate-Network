@@ -34,7 +34,7 @@ def affiliate():
             params[token_keywords] = api_token.token
 
         if pagesize_keywords is not None:
-            params[pagesize_keywords] = 10
+            params[pagesize_keywords] = 100  # default 100
 
         if page_keywords is not None:
             params[page_keywords] = 1  # default first page

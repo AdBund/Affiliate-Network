@@ -13,7 +13,7 @@ login:
 affiliate:
   loop_path: data.data.*
   contents:
-    trackinglink: tracklink
+    tracking_link: tracklink
     country: countries
     payout: payout
     preview_link: preview_url

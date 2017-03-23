@@ -10,8 +10,7 @@ class OfferRequest(object):
         url = self.url
         params = self.params
         response = requests.request(method, url=url, params=params)
-        print(response.text)
-        # return response.json()
+        return response.json()
 
     def offer_operate(self):
         pass  # todo

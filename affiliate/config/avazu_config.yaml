@@ -23,7 +23,7 @@ login:
 affiliate:
   loop_path: campaigns[*].lps[*]
   contents:
-    trackinglink: trackinglink
+    tracking_link: trackinglink
     country: country
     payout: payout
     preview_link: previewlink
