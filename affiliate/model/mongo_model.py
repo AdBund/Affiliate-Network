@@ -1,3 +1,4 @@
+import pymongo
 from mongoengine import *
 from affiliate.model.config import mongodb
 
@@ -52,6 +53,8 @@ class Affiliates(Document):
         for item in data:
             try:
                 cls.objects.create(**item)
+            except NotUniqueError as err:
+                continue
             except:
                 count += 1
         return True if count > 0 else False
