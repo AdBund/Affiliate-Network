@@ -12,6 +12,10 @@ class Provider(Document):
         obj = cls.objects.filter(name=name)
         return obj[0] if obj else cls.objects.create(name=name)
 
+    @classmethod
+    def get_by_id(cls, _id):
+        return cls.objects.get(id=_id)
+
 
 class ApiToken(Document):
     mode = BooleanField()
@@ -44,8 +48,10 @@ class Affiliates(Document):
 
     @classmethod
     def save_all(cls, data):
-        [cls.objects.create(**item) for item in data]
-
-
-ApiToken.objects.order_by('user_id')
-
+        count = 0
+        for item in data:
+            try:
+                cls.objects.create(**item)
+            except:
+                count += 1
+        return True if count > 0 else False
