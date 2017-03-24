@@ -6,6 +6,7 @@ import yaml
 from affiliate.model.mongo_model import Provider
 from affiliate.config.offer_id_list import OfferIdList
 from affiliate.config.number_id_list import NumberIdList
+from jsonpath_rw import parse
 
 
 class LoadYaml():
@@ -44,6 +45,23 @@ class LoadYaml():
             return dict(zip(range(len(data)), data))
 
         return data
+
+    def getResultPages(self, offers):
+        login = self.y['login']
+        firstResult = login['result']
+        page_path = firstResult['page_path']
+        totalnum_path = firstResult['totalnum_path']
+        pageNumbers = 0
+        if page_path is not None:
+            pageNumbers = int(parse(page_path).find(offers)[0].value)  # todo:
+            return pageNumbers
+        if totalnum_path is not None:
+            totalnum = int(parse(totalnum_path).find(offers)[0].value)  # todo:
+            if totalnum <= 100:
+                return 1
+            pageNumbers = (totalnum / 100) + 1
+            return pageNumbers
+        return pageNumbers
 
 
 def parse_content(self, key, data):

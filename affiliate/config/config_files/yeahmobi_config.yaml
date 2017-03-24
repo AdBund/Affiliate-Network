@@ -5,9 +5,13 @@ login:
   username: api_id
   token: api_token
   pagesize: limit
-  page: page
+  currentpage: page
 
   other_params:
+
+  result:
+      page_path: data[totalpage]
+      totalnum_path: data[totalrecord]
 
 
 affiliate:

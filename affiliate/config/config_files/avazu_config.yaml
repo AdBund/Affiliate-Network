@@ -1,6 +1,6 @@
 login:
   provider: avazu
-  userId: 71
+  userId: 71 # todo : find it in redis
   api_url: http://api.c.avazutracking.net/performance/v2/getcampaigns.php
   username: uid
   passwd:
@@ -13,11 +13,15 @@ login:
   params2_v:
   # need:provider,userId,api_url,token
   pagesize: pagesize # select from db
-  page: page
+  currentpage: page
 
   other_params:
     totalnum: totalnum  # the data from api turn
 
+  result:
+    resultcode: # todo
+    page_path:
+    totalnum_path: totalnum
 
 
 affiliate:
