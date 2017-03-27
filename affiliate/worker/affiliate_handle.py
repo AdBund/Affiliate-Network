@@ -3,7 +3,7 @@ from affiliate.rest.affiliate_request import OfferRequest
 from affiliate.model.mongo_model import Provider, ApiToken, Affiliates
 
 
-def affiliate(file_name,userId,page_name=1):
+def affiliate(file_name, userId, page_name=1):
     """
     affiliate auto with python
     :return:

@@ -13,12 +13,13 @@
 import json
 
 import redis
-from affiliate.model.config import redis as red
+from affiliate.model.config import redis as r_config
 
 
 class R():
     def __init__(self):
-        self._r = redis.Redis(host=red['host'], port=red['port'], db=red['db'], password=red['password'])
+        self._r = redis.Redis(host=r_config['host'], port=r_config['port'], db=r_config['db'],
+                              password=r_config['password'])
 
     @property
     def r(self):

@@ -13,7 +13,7 @@ class LoadYaml():
     def __init__(self, file_name):
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         # path = os.path.join(base_dir, 'config\config_files\\avazu_config.yaml')
-        file_base_path = os.path.join(base_dir, 'config\config_files')  # todo
+        file_base_path = os.path.join(base_dir, 'config/config_files')  # todo
         path = os.path.join(file_base_path, file_name + '_config.yaml')
         if not os.path.exists(path):
             raise Exception('config file not exit')
