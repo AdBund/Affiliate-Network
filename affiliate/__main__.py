@@ -34,4 +34,3 @@ if __name__ == '__main__':
     [pool.apply_async(task) for i in range(processes)]
     pool.close()
     pool.join()
-print(123)

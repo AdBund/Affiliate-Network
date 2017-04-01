@@ -27,6 +27,7 @@ pycparser==2.17
 pyflakes==1.5.0
 Pygments==2.2.0
 PyMySQL==0.7.10
+PyMySQL3==0.5
 pyparsing==2.2.0
 python-dateutil==2.6.0
 pytz==2016.10
@@ -36,4 +37,5 @@ schedule==0.4.2
 six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.5.3
+threadpool==1.3.2
 vine==1.1.3
