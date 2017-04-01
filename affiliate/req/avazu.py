@@ -1,3 +1,44 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+@author: amigo
+@contact: 88315203@qq.com
+@phone: 15618318407
+@software: PyCharm
+@file: avazu.py
+@time: 2017/3/29 下午5:35
+"""
+import requests
+
+"""
+username:18629
+
+password:
+23011
+22433
+22417
+22416
+"""
+
+
+class AvazuReq:
+    def __init__(self, url, username, password):
+        self.url = url
+        self.username = username
+        self.password = password
+
+    def get_all_offer(self):
+        query = {
+            'uid': self.username,
+            'sourceid': self.password,
+            'pagesize': 9999999999999999
+        }
+        response = requests.request("GET", self.url, params=query)
+        return response.json()
+
+
+
 import requests
 
 
@@ -18,8 +59,8 @@ class Avazu():
             'sourceid': self.api_token,
         }
         response = requests.request("GET", url, params=query)
-        # return response.text
-        return response.json()
+        return response.text
+        # return response.json()
 
 
 if __name__ == '__main__':

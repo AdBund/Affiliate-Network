@@ -1,105 +1,47 @@
-import datetime
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+@author: amigo
+@contact: 88315203@qq.com
+@phone: 15618318407
+@software: PyCharm
+@file: avazu.py
+@time: 2017/3/29 下午5:41
+"""
 import json
-import logging
-import traceback
 
-import peewee
-
-from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
-from affiliate.rest.avazu import Avazu
-from affiliate.model.mongo_model import MCampaignStatistics
-import time
+from affiliate.common.helper import Helper
+from affiliate.req.avazu import AvazuReq
+from affiliate.model.mysql_model import ThirdPartyOffer, OfferSyncTask
+from affiliate.worker.base_worker import BaseWorker
 
 
-def avazu():
-    """
-    yeahmobi api with python
-    :return:
-    """
+class AvazuWork(BaseWorker):
+    def __init__(self, taskId, userId, url, username, password):
+        super().__init__(taskId, userId, url, username, password)
 
-    provider = AProvider.get(name="avazu")
-    api_tokens = (AApiToken.select(AApiToken).join(AProvider).where(AApiToken.provider_id == provider.id).order_by())
-
-    for api_token in api_tokens:
-        user_name = api_token.username
-        user_token = api_token.token
-
-        avazu = Avazu(user_name, user_token)
-        offers = avazu.get_all_offer()  # todo : net error
-        if offers['code'] == 1:
-            print('continue')
-            continue
-        offer_list = offers['campaigns']
-
-        for offer in offer_list:
-            conversion_flow = offer['convflow']
-            offer_id = offer['cpnid']
-            # exclusive = offer_id['exclusive']
-            # incentive = offer_id['incentive']
-            name = offer['cpnname']
-            offer_description = offer['description']
-            offer_type = offer['traffictype']
-
-            carriers = offer['carrier']
-            category = offer['category']
-            country = ''
-            payout = ''
-            preview_url = ''
-            tracklink = ''
-
-            lps = offer['lps']
-
-            # save in mysql
-
-            doc = {
-                'provider': provider,
-                'api_token': api_token,
-                'affiliate_identity': offer_id,
-                'name': name,
-            }
-
-            try:
-                MCampaignStatistics(provider_id=provider.id,
-                                    date=datetime.datetime.now(),
-                                    raw=offer).save()
-                AAffiliates.insert(doc).execute()
-
-            except peewee.IntegrityError:
-                logging.warning(' doc data already exists')
-                pass
-            except Exception as e:
-                logging.warning(e)
-                pass
-
-            for lp in lps:
-                country = lp['country']
-                payout = lp['payout']
-                preview_url = lp['previewlink']
-                tracklink = lp['trackinglink']
-
-                statistics = {
-                    'carriers': carriers,
-                    'countries': country,
-                    'category': category,
-                    'provider': provider,
-                    'api_token': api_token,
-                    'affiliate': AAffiliates.get(provider=provider, affiliate_identity=offer_id),
-                    'conversion_flow': conversion_flow,
-                    'offer_description': offer_description,
-                    'offer_type': offer_type,
-                    'payout': payout,
-                    'preview_url': preview_url,
-                    'tracklink': tracklink,
-                    # 'date': datetime.datetime.now(),
-                }
-
-                print('-----------------------')
-                try:
-                    AStatistics.insert(statistics).execute()
-                except peewee.IntegrityError:
-                    logging.warning(' statistics data already exists')
-                    pass
-                except Exception as e:
-                    traceback.print_exc()
-                    logging.warning(e)
-                    pass
+    def start(self):
+        avazu_req = AvazuReq(url=self.url, username=self.username, password=self.password)
+        raw_data = avazu_req.get_all_offer()
+        if raw_data['code'] == 0:
+            self.delete_old_offers()
+            offers = raw_data['campaigns']
+            for item in offers:
+                for lp in item['lps']:
+                    offer_data = {
+                        'userId': self.userId,
+                        'taskId': self.taskId,
+                        'offerId': item['cpnid'],
+                        'name': item['cpnname'],
+                        'previewLink': lp['previewlink'],
+                        'trackingLink': lp['trackinglink'],
+                        'countryCode': Helper.fix_country(lp['country']),  # 这里需要转换country到三位
+                        'payoutValue': float(lp['payout']),
+                        'category': item['category'],
+                        'carrier': item['carrier'],
+                        'detail': json.dumps(item),
+                    }
+                    ThirdPartyOffer.insert(offer_data).execute()
+        else:
+            raise Exception('access avazu failed')

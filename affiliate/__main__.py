@@ -1,44 +1,37 @@
-import threading
-import traceback
-import logging
-import time
-import schedule
-from affiliate.worker import yeahmobi
-from affiliate.worker import avazu
+#!/usr/bin/env python
+# encoding: utf-8
+
+"""
+@author: amigo
+@contact: 88315203@qq.com
+@phone: 15618318407
+@software: PyCharm
+@file: t.py
+@time: 2017/3/30 下午4:43
+"""
+
+import os
+import sys
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+
+from multiprocessing import cpu_count
+import multiprocessing
+
+single_task_path = os.path.join(BASE_DIR, 'affiliate/single_task.py')
+reset_path = os.path.join(BASE_DIR, 'affiliate/reset.py')
 
 
-def job():
-    start = time.time()
-    print("start: job time: " + str(start))
-    listTS = [avazu, yeahmobi]
-
-    for ts in listTS:
-        try:
-            print('start -->' + str(ts))
-            threading.Thread(target=ts).start()
-        except Exception as e:
-            print(str(ts) + ' is error ,and error : ' + str(e) + " continue next TS !")
-            logging.error(traceback.format_exc())
-            continue
-
-    end = time.time()
-
-    print("use time :" + str(end - start))
-
-
-def main():
-    print("start job")
-
-    schedule.every(12).hours.do(job).run()  # run: Run the job and immediately reschedule it.
-
-    while True:
-        try:
-            schedule.run_pending()
-            time.sleep(1)
-        except Exception as e:
-            print(e)
-            logging.error(traceback.format_exc())
+def task():
+    os.system('python %s' % single_task_path)
 
 
 if __name__ == '__main__':
-    main()
+    os.system('python %s' % reset_path)
+    processes = cpu_count()  # 根据cpu核心数决定进程数量
+    pool = multiprocessing.Pool(processes=processes)
+    [pool.apply_async(task) for i in range(processes)]
+    pool.close()
+    pool.join()
+print(123)

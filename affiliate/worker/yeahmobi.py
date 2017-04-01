@@ -1,93 +1,46 @@
 import logging
-
 import peewee
 
-from affiliate.model.mysql_model import AProvider, AApiToken, AAffiliates, AStatistics, db
-from affiliate.rest.yeahmobi import Yeahmobi
+from affiliate.common.helper import Helper
+from affiliate.req.yeahmobi import YeahmobiReq
+from affiliate.model.mysql_model import ThirdPartyOffer
+from affiliate.worker.base_worker import BaseWorker
 
 
-def yeahmobi():
-    """
-    yeahmobi api with python
-    :return:
-    """
+class YeahmobiWork(BaseWorker):
+    def __init__(self, taskId, userId, url, username, password):
+        super().__init__(taskId, userId, url, username, password)
 
-    provider = AProvider.get(name="yeahmobi")
+    def start(self):
+        yeahmobi_req = YeahmobiReq(url=self.url, username=self.username, password=self.password)
+        flag, pages, first_data = yeahmobi_req.get_pages()
+        if flag == 'success':
+            self.delete_old_offers()
+            for i in range(pages):
+                current_page = i + 1
+                if current_page == 1:
+                    offers = first_data
+                else:
+                    offers = yeahmobi_req.get_offer_by_page(current_page)
+                    if offers['flag'] != 'success':
+                        raise Exception('access yeahmobi failed')
+                    offers = offers['data']['data']
 
-    # api_tokens = (AApiToken.select(AApiToken).join(AProvider).where(AProvider.id == provider.id).order_by())
-    api_tokens = (AApiToken.select(AApiToken).join(AProvider).where(AApiToken.provider_id == provider.id).order_by())
-
-    for api_token in api_tokens:
-        user_name = api_token.username
-        user_token = api_token.token
-        # print(user_token)
-        # print(user_name)
-
-        yeahmobi = Yeahmobi(user_name, user_token)
-        offers = yeahmobi.get_all_offer()  # todo : net error
-        if not offers['flag'] == 'success':
-            print('continue')
-            continue
-        offer_list = offers['data']['data']
-
-        for offer_id in offer_list:
-            offer_rows = offer_list[offer_id]
-            conversion_flow = offer_rows['conversion_flow']
-            exclusive = offer_rows['exclusive']
-            incentive = offer_rows['incentive']
-            name = offer_rows['name']
-            offer_description = offer_rows['offer_description']
-            offer_type = offer_rows['offer_type']
-            payout = offer_rows['payout']
-            preview_url = offer_rows['preview_url']
-            tracklink = offer_rows['tracklink']
-
-            # todo:
-            # offer_s = list(map(lambda offer_rows: {
-            #     'conversion_flow': offer_rows['conversion_flow']
-            # }, offer_list[offer]))
-
-
-
-            # save in mysql
-
-            doc = {
-                'provider': provider,
-                'api_token': api_token,
-                'affiliate_identity': offer_id,
-                'name': name,
-            }
-
-            try:
-                AAffiliates.insert(doc).execute()
-            except peewee.IntegrityError:
-                logging.warning('data already exists')
-                pass
-            except Exception as e:
-                logging.warning(e)
-                pass
-
-            statistics = {
-                'provider': provider,
-                'api_token': api_token,
-                'affiliate': AAffiliates.get(provider=provider, affiliate_identity=offer_id),
-                #
-                'conversion_flow': conversion_flow,
-                'exclusive': exclusive,
-                'incentive': incentive,
-                # 'name': name,
-                'offer_description': offer_description,
-                'offer_type': offer_type,
-                'payout': payout,
-                'preview_url': preview_url,
-                'tracklink': tracklink,
-            }
-
-            try:
-                AStatistics.insert(statistics).execute()
-            except peewee.IntegrityError:
-                logging.warning('data already exists')
-                pass
-            except Exception as e:
-                logging.warning(e)
-                pass
+                for k, v in dict(offers).items():
+                    offer_data = {
+                        'userId': self.userId,
+                        'taskId': self.taskId,
+                        'offerId': k,
+                        'name': v['name'],
+                        'previewLink': v['preview_url'],
+                        'trackingLink': v['tracklink'],
+                        'countryCode': Helper.fix_country(v['countries']),  # 这里需要转换country到三位
+                        'payoutValue': float(v['payout']),
+                        'category': v['category'],
+                        'carrier': v['carriers'],
+                        'platform': v['platform'],
+                        'detail': v,
+                    }
+                    ThirdPartyOffer.insert(offer_data).execute()
+        else:
+            raise Exception('access yeahmobi failed')

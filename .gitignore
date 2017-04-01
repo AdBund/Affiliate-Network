@@ -2,7 +2,3 @@
 *.pyc
 .idea
 *.iml
-/affiliate/model/config.py
-/affiliate/model/task/config/database.yml
-/affiliate/dj/dj_app/migrations/
-/affiliate/dj/dj/config.py
